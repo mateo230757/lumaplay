@@ -1,0 +1,16 @@
+VERIFICACIÓN DEL PAQUETE LUMAPLAY
+=================================
+
+Formato del instalador: ejecutable PE32+ de Windows (GUI), x86-64.
+Nombre: LumaPlay_Setup.exe
+Función: extrae el proyecto integrado en una carpeta temporal e inicia el
+asistente PowerShell de instalación.
+
+La aplicación de escritorio se compila como LumaPlay.exe durante la instalación
+con el compilador C# disponible en el equipo Windows. No se pudo producir aquí
+esa compilación previa porque el entorno de construcción disponible no incluye
+el compilador .NET Framework/Windows Forms. Por eso se entrega un instalador
+funcional que ejecuta la compilación en Windows, junto con el código fuente.
+
+El instalador está construido como un ejecutable Windows x64 autocontenido; no
+requiere Go instalado en el equipo del usuario.
