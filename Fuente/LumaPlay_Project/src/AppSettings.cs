@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Web.Script.Serialization;
 
 namespace LumaPlay
 {
@@ -28,13 +28,6 @@ namespace LumaPlay
 
     public sealed class AppSettings
     {
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            AllowTrailingCommas = true,
-            WriteIndented = true
-        };
-
         public string ProfileName { get; set; }
         public string Accent { get; set; }
         public bool SetupComplete { get; set; }
@@ -69,7 +62,9 @@ namespace LumaPlay
             {
                 if (File.Exists(SettingsFile))
                 {
-                    AppSettings loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(SettingsFile), JsonOptions);
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
+                    serializer.MaxJsonLength = Int32.MaxValue;
+                    AppSettings loaded = serializer.Deserialize<AppSettings>(File.ReadAllText(SettingsFile));
                     if (loaded != null) settings = loaded;
                 }
             }
@@ -113,7 +108,9 @@ namespace LumaPlay
         {
             Normalize();
             Directory.CreateDirectory(DataDirectory);
-            File.WriteAllText(SettingsFile, JsonSerializer.Serialize(this, JsonOptions));
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = Int32.MaxValue;
+            File.WriteAllText(SettingsFile, serializer.Serialize(this));
         }
     }
 }

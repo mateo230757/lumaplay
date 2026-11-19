@@ -21,15 +21,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Install .NET 10 SDK (build machine only)
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Publish self-contained application
+      - name: Compile LumaPlay in the build runner
         shell: pwsh
         run: |
-          dotnet publish "Fuente/LumaPlay_Project/src/LumaPlay.csproj" --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=embedded --output "Fuente/LumaPlay_Project/publish"
+          & "Fuente/LumaPlay_Project/Build.ps1" -OutputDirectory "Fuente/LumaPlay_Project/publish"
           if ($LASTEXITCODE -ne 0) { throw "No se pudo compilar LumaPlay." }
           if (-not (Test-Path "Fuente/LumaPlay_Project/publish/LumaPlay.exe")) { throw "No se generó LumaPlay.exe." }
 
@@ -62,9 +57,9 @@ jobs:
             Instalador oficial de LumaPlay para Windows x64.
 
             - Asistente gráfico con Siguiente / Atrás.
-            - Aplicación y runtime .NET incluidos.
-            - No requiere instalar .NET, C#, SDK ni compilador en el PC del usuario.
-            - La instalación funciona sin conexión después de descargar el archivo.
+            - Aplicación precompilada.
+            - No requiere instalar C#, Visual Studio, Build Tools ni compilador en el PC del usuario.
+            - En Windows 10 22H2 y Windows 11, .NET Framework compatible ya forma parte del sistema.
 
             Build de GitHub Actions: ${{ github.sha }}
           files: |

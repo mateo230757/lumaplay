@@ -10,9 +10,10 @@ Haz doble clic en el instalador. Verás un asistente gráfico con páginas
 Siguiente / Atrás / Cancelar, licencia, carpeta de destino, opciones de
 accesos directos, progreso y finalización.
 
-No necesitas instalar C#, .NET Framework, .NET Runtime, Visual Studio,
-Build Tools ni un compilador. El instalador lleva la aplicación ya compilada
-y el runtime de .NET que necesita.
+No necesitas instalar C#, Visual Studio, Build Tools ni un compilador.
+En Windows 10 22H2 y Windows 11, .NET Framework 4.8 o una versión superior
+compatible viene integrado en el sistema, por lo que no hace falta descargar
+un runtime separado para estas versiones de Windows.
 
 La instalación no descarga componentes de Internet. Después de descargar
 LumaPlay_Setup.exe, puedes instalarla sin conexión.
@@ -21,11 +22,10 @@ REQUISITOS DEL USUARIO
 ---------------------
 - Windows 10 22H2 o Windows 11.
 - Procesador y sistema de 64 bits (x64).
-- Espacio libre para la aplicación y el runtime incluido.
 
 QUÉ INSTALA
 -----------
-- LumaPlay.exe, aplicación de escritorio.
+- LumaPlay.exe, aplicación de escritorio ya compilada.
 - Acceso directo al menú Inicio.
 - Acceso directo al Escritorio, opcional.
 - Desinstalador de Windows.
@@ -33,9 +33,8 @@ QUÉ INSTALA
 Los ajustes y estadísticas se guardan en:
 %LOCALAPPDATA%\LumaPlay
 
-Al desinstalar, el instalador conserva esos datos personales para evitar
-borrar perfiles o estadísticas sin permiso. Puedes eliminarlos manualmente
-desde la carpeta indicada.
+Al desinstalar, el instalador conserva esos datos personales. Puedes eliminarlos
+manualmente desde la carpeta indicada.
 
 CONTENIDO
 ---------
@@ -53,8 +52,8 @@ el juego.
 
 COMPILAR COMO DESARROLLADOR
 ---------------------------
-La compilación se realiza con .NET 10 SDK (solo para desarrolladores):
+La compilación se realiza con el compilador de C# del entorno de desarrollo:
   .\Build.ps1
 o ejecuta Compilar.bat.
 
-Los usuarios de la aplicación no necesitan ninguna de esas herramientas.
+Los usuarios de la aplicación no necesitan el compilador.

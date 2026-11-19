@@ -3,24 +3,48 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$project = Join-Path $PSScriptRoot "src\LumaPlay.csproj"
+$source = Join-Path $PSScriptRoot "src"
+$compilerCandidates = @(
+    (Join-Path $env:WINDIR "Microsoft.NET\Framework64\v4.0.30319\csc.exe"),
+    (Join-Path $env:WINDIR "Microsoft.NET\Framework\v4.0.30319\csc.exe")
+)
+$csc = $compilerCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 
-if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    throw "Para compilar como desarrollador necesitas instalar el SDK de .NET 10. Los usuarios normales NO necesitan instalarlo: reciben el programa ya compilado dentro del instalador."
+if (-not $csc) {
+    throw "No se encontró csc.exe. Esta herramienta solo se necesita para compilar el código fuente como desarrollador; el usuario final no la necesita."
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
-Write-Host "Publicando LumaPlay como aplicación autónoma de Windows x64..." -ForegroundColor Cyan
-Write-Host "El runtime .NET se incluye en el ejecutable. No se usa el compilador del PC del usuario." -ForegroundColor Gray
-
-& dotnet publish $project --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=embedded --output $OutputDirectory
-
-if ($LASTEXITCODE -ne 0) {
-    throw "Falló la publicación. Revisa los errores de dotnet publish."
-}
-
 $exe = Join-Path $OutputDirectory "LumaPlay.exe"
-if (-not (Test-Path $exe)) {
-    throw "La compilación terminó sin producir LumaPlay.exe."
+$icon = Join-Path $source "Assets\lumaplay.ico"
+$files = @(
+    (Join-Path $source "Program.cs"),
+    (Join-Path $source "AppSettings.cs"),
+    (Join-Path $source "Theme.cs"),
+    (Join-Path $source "SetupForm.cs"),
+    (Join-Path $source "MainForm.cs"),
+    (Join-Path $source "GameCanvas.cs")
+)
+
+$compilerArgs = @(
+    "/nologo",
+    "/target:winexe",
+    "/platform:anycpu",
+    "/optimize+",
+    "/debug-",
+    "/out:$exe",
+    "/reference:System.dll",
+    "/reference:System.Core.dll",
+    "/reference:System.Drawing.dll",
+    "/reference:System.Windows.Forms.dll",
+    "/reference:System.Web.Extensions.dll"
+)
+if (Test-Path $icon) { $compilerArgs += "/win32icon:$icon" }
+$compilerArgs += $files
+
+Write-Host "Compilando LumaPlay para Windows..." -ForegroundColor Cyan
+& $csc @compilerArgs
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path $exe)) {
+    throw "Falló la compilación de LumaPlay."
 }
-Write-Host "Listo: $exe" -ForegroundColor Green
+Write-Host "Compilación completada: $exe" -ForegroundColor Green

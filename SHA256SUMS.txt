@@ -1,0 +1,4 @@
+El hash SHA-256 del instalador se genera y publica como asset junto al
+LumaPlay_Setup.exe en GitHub Releases:
+
+https://github.com/mateo230757/lumaplay/releases/latest

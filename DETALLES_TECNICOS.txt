@@ -3,34 +3,33 @@ LUMAPLAY 1.1.0 — DETALLES TÉCNICOS
 
 ARQUITECTURA
 - Aplicación de escritorio C# / Windows Forms.
-- Target: .NET 10 para Windows.
+- Target: .NET Framework 4.8.
 - Plataforma de distribución: Windows x64.
-- Persistencia: System.Text.Json en %LOCALAPPDATA%\LumaPlay\settings.json.
+- Persistencia: JavaScriptSerializer en settings.json local.
 - Instalador: Inno Setup 6, formato EXE con asistente gráfico.
 
-DISTRIBUCIÓN AUTÓNOMA
-La aplicación se compila en GitHub Actions usando un runner Windows.
-Se publica como self-contained y single-file. El ejecutable incluye el runtime
-.NET y las dependencias administradas de la aplicación.
+DISTRIBUCIÓN
+La aplicación se compila en GitHub Actions usando el compilador C# de un
+runner Windows. El ejecutable LumaPlay.exe ya compilado se empaqueta dentro
+de LumaPlay_Setup.exe. El PC del usuario nunca compila código.
 
 El usuario final NO necesita:
-- Instalar .NET Framework 4.8.
-- Instalar .NET Runtime por separado.
 - Instalar C#, Visual Studio o Build Tools.
 - Tener csc.exe o un compilador.
-- Compilar el código en su propio PC.
-- Conexión a Internet durante la instalación (después de descargar el EXE).
+- Compilar código en su propio PC.
+- Descargar un runtime .NET aparte en Windows 10 22H2 o Windows 11.
+
+.NET Framework 4.8 viene integrado en Windows 10 22H2; Windows 11 incluye
+una versión posterior compatible con aplicaciones 4.8.
 
 ASISTENTE
 Inno Setup ofrece páginas gráficas de bienvenida, licencia, carpeta de destino,
 tareas de accesos directos, confirmación, progreso y finalización, con botones
-Siguiente, Atrás y Cancelar. El desinstalador queda registrado en Windows.
+Siguiente, Atrás y Cancelar.
 
 COMPILACIÓN
-Los desarrolladores necesitan .NET 10 SDK e Inno Setup 6 para construir el
-producto. Esas herramientas se usan solo en el entorno de desarrollo/CI y no
-se distribuyen como requisitos para los usuarios.
+El compilador se usa únicamente en el entorno de desarrollo/CI, nunca durante
+la instalación del usuario final.
 
 NOTA
 El instalador está dirigido a Windows 10 22H2 o Windows 11 de 64 bits.
-El runtime va dentro del ejecutable; esto aumenta el tamaño de la descarga.
