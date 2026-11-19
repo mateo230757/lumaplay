@@ -1,46 +1,34 @@
-LUMAPLAY PARA WINDOWS — PAQUETE COMPLETO
-========================================
+# LumaPlay para Windows
 
-ARCHIVO QUE DEBES ABRIR
-  LumaPlay_Setup.exe
+## Descarga
 
-CÓMO INSTALAR
-1. Extrae este ZIP en una carpeta de tu PC.
-2. Haz doble clic en LumaPlay_Setup.exe.
-3. Acepta el cuadro inicial.
-4. Se abrirá una ventana de PowerShell con el asistente. Elige dónde instalar
-   LumaPlay y si quieres accesos directos en el Escritorio y en Inicio.
-5. Cuando termine, podrás abrir LumaPlay desde el acceso directo.
+La descarga pública es LumaPlay_Setup.exe:
+https://github.com/mateo230757/lumaplay/releases/latest/download/LumaPlay_Setup.exe
 
-QUÉ INCLUYE
-- LumaPlay_Setup.exe: instalador nativo para Windows de 64 bits.
-- Fuente/LumaPlay_Project: proyecto C#, icono, scripts de instalación y código.
-- Fuente/LumaPlay_Setup_Source: código fuente del pequeño lanzador instalador y
-  el paquete que lleva integrado.
+## Instalación
 
-IMPORTANTE: QUÉ EJECUTABLE ES ESTE
-El ZIP sí incluye el archivo LumaPlay_Setup.exe. Es el instalador, no una copia
-precompilada de la aplicación final. El asistente compila LumaPlay.exe en tu PC
-usando csc.exe (el compilador C# de .NET Framework). El instalador no crea una
-aplicación vacía ni simula que se instaló: si la compilación falla, lo indica.
+1. Descarga el instalador.
+2. Ábrelo con doble clic.
+3. Avanza por las páginas del asistente con Siguiente o vuelve con Atrás.
+4. Acepta la licencia, elige la carpeta y selecciona si deseas acceso directo en
+   el Escritorio.
+5. Pulsa Instalar y, al finalizar, puedes iniciar LumaPlay.
 
-REQUISITOS
-- Windows 10 u 11 de 64 bits.
-- .NET Framework 4.8.
-- csc.exe, el compilador C# de .NET Framework (normalmente disponible en las
-  carpetas Framework o Framework64 de Microsoft.NET en Windows).
+No necesitas instalar .NET, .NET Framework, Visual Studio, C#, Build Tools ni
+un compilador. La aplicación ya viene compilada y el runtime .NET está incluido.
+Después de descargar el instalador, la instalación funciona sin conexión.
 
-CONTENIDO DE LUMAPLAY 1.0.0
-- Biblioteca local para agregar juegos que ya tengas instalados.
-- Arcade integrado Neon Drift, sin conexión.
-- Catálogo, logros, estadísticas y ajustes guardados localmente.
+## Requisitos
 
-LIMITACIONES DE ESTA EDICIÓN
-No incluye tienda en línea, cuentas en la nube, pagos, multijugador, chat ni
-servidores. Añadir un juego solo guarda la ruta de su ejecutable; no lo copia ni
-lo instala.
+- Windows 10 22H2 o Windows 11.
+- Sistema de 64 bits (x64).
 
-NOTA DE SEGURIDAD
-El instalador no está firmado con un certificado comercial. Windows puede
-mostrar una advertencia de editor desconocido. Comprueba que el archivo se
-llame LumaPlay_Setup.exe y que procede de este paquete antes de ejecutarlo.
+## Privacidad y desinstalación
+
+LumaPlay guarda el perfil y las estadísticas en %LOCALAPPDATA%\LumaPlay.
+Al desinstalar se elimina la aplicación, pero se conservan estos datos para que
+no pierdas tu perfil accidentalmente.
+
+## Página web
+
+https://mateo230757.github.io/lumaplay/

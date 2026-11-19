@@ -1,70 +1,77 @@
-# Arquitectura de LumaPlay 1.0.0
+# Arquitectura de LumaPlay 1.1.0
 
-## Objetivo de esta edición
+## Objetivo
 
-LumaPlay 1.0.0 es una aplicación de escritorio local. La prioridad es entregar una base real y ejecutable en Windows: navegación, biblioteca, persistencia, instalación guiada y un juego integrado. La interfaz no simula servicios de red que todavía no existen.
+Entregar una aplicación Windows x64 instalada como un producto de escritorio:
+el usuario descarga un único instalador gráfico y no necesita configurar
+herramientas de desarrollo ni instalar el runtime .NET por separado.
 
-## Capas
+## Tecnologías
 
-### Interfaz
+- C# como lenguaje de implementación.
+- Windows Forms para la interfaz de escritorio.
+- .NET 10 (net10.0-windows).
+- System.Text.Json para configuración JSON.
+- Publicación autocontenida win-x64, single-file.
+- Inno Setup 6 para el asistente de instalación.
+- GitHub Actions en Windows para compilar y publicar el instalador.
 
-- `MainForm.cs`: ventana principal y navegación entre Inicio, Descubrir, Biblioteca, Logros, Ajustes y Acerca de.
-- `SetupForm.cs`: primer inicio y creación del perfil local.
-- `Theme.cs`: colores de la interfaz y paneles degradados.
-- `GameCanvas.cs`: superficie de juego, bucle de actualización, entrada de teclado, colisiones y dibujo de Neon Drift.
+## Componentes de la aplicación
 
-### Datos
+- MainForm.cs: ventana principal y navegación.
+- SetupForm.cs: creación del perfil en el primer inicio.
+- Theme.cs: paleta y paneles de interfaz.
+- GameCanvas.cs: juego Neon Drift.
+- AppSettings.cs: perfil, biblioteca y estadísticas en JSON.
+- Program.cs: inicialización de Windows Forms y carga del perfil.
 
-- `AppSettings.cs`: perfil, color de acento, récord, número de partidas y biblioteca.
-- Serialización JSON mediante `JavaScriptSerializer`.
-- Ubicación: `%LOCALAPPDATA%\LumaPlay\settings.json`.
-- Los juegos externos se representan mediante una ruta de ejecutable; no se duplican sus carpetas ni recursos.
+## Datos
 
-### Instalación
+- Archivo: %LOCALAPPDATA%\LumaPlay\settings.json.
+- Los juegos externos se representan mediante rutas locales a sus ejecutables.
+- No se copian, modifican ni descargan juegos externos.
+- El formato JSON mantiene nombres de propiedades compatibles con los datos
+  creados por la versión anterior.
 
-- `Instalar-LumaPlay.ps1`: recoge la ubicación, crea accesos y copia el ejecutable compilado.
-- `Build.ps1`: compila el código C# con el compilador de .NET Framework.
-- `Desinstalar-LumaPlay.ps1`: retira los archivos de LumaPlay y pregunta por separado si se borran los datos del perfil.
+## Flujo de compilación y distribución
 
-## Flujo de primer inicio
+1. El desarrollador actualiza el repositorio.
+2. GitHub Actions usa un runner Windows e instala el SDK de .NET 10.
+3. dotnet publish compila LumaPlay para win-x64, self-contained y single-file.
+4. Inno Setup empaqueta ese ejecutable en LumaPlay_Setup.exe.
+5. El pipeline calcula SHA-256 y publica el instalador en GitHub Releases.
+6. La página web enlaza al asset estable de la última release.
 
-1. El usuario extrae el paquete.
-2. El instalador pregunta carpeta, nombre del acceso directo y destinos.
-3. El instalador compila `LumaPlay.exe`.
-4. La aplicación abre `SetupForm` si no existe un perfil inicializado.
-5. El usuario elige nombre y color de acento.
-6. `MainForm` carga las secciones y `AppSettings` guarda los cambios.
+El SDK, compilador y herramientas existen únicamente en el entorno de compilación.
+No se copian al PC del usuario.
 
-## Añadir un juego externo
+## Asistente de instalación
 
-1. El usuario selecciona `Añadir juego`.
-2. Un selector de archivos filtra ejecutables `.exe`.
-3. Se guarda ruta, nombre, descripción local y estadísticas básicas.
-4. `Process.Start` abre el ejecutable cuando se pulsa `Abrir`.
-5. Quitar el elemento elimina únicamente el registro de LumaPlay.
+El instalador Inno Setup tiene el flujo visual estándar:
+- Bienvenida.
+- Licencia.
+- Selección de carpeta.
+- Opciones de accesos directos.
+- Resumen y confirmación.
+- Barra de progreso.
+- Finalización con opción de iniciar LumaPlay.
 
-**Nota:** un juego externo puede necesitar su launcher oficial, permisos o dependencias propias. La biblioteca no descarga ni instala el juego.
+Los botones Siguiente, Atrás y Cancelar los proporciona el propio asistente.
 
-## Neon Drift
+## Runtime .NET
 
-- Cinco carriles discretos.
-- Obstáculos generados progresivamente.
-- Movimiento mediante flechas o A/D.
-- ESPACIO inicia o pausa; ESC vuelve a la biblioteca.
-- Puntuación, récord persistente y logros calculados a partir de estadísticas.
-- La demo web es una implementación independiente del mismo concepto, con récord guardado en `localStorage` del navegador.
+La aplicación se publica como self-contained y single-file. El archivo final
+incluye el runtime .NET y las dependencias administradas necesarias. Por ello,
+el usuario no tiene que instalar .NET Framework, .NET Runtime ni el SDK.
+El paquete es específico para Windows x64.
 
-## Evolución posible
+## Desinstalación
 
-| Versión | Área | Trabajo necesario |
-|---|---|---|
-| 1.1 | Biblioteca | Portadas, categorías, favoritos, etiquetas y búsqueda avanzada. |
-| 1.2 | Experiencia | Actualizador con versiones firmadas, instalador visual y copias de seguridad de perfil. |
-| 2.0 | Cuentas | Servicio de identidad, API, base de datos, sincronización y recuperación de cuenta. |
-| 2.1 | Catálogo | Servicio de catálogo, almacenamiento de paquetes, verificación de hashes y canal de actualizaciones. |
-| 3.0 | Comunidad | Publicación de juegos, revisión de contenido, permisos, reportes y moderación. |
-| 4.0 | Multijugador | Servicios de sesión, emparejamiento, relay/servidores dedicados, antitrampas y observabilidad. |
+Inno Setup registra LumaPlay en Aplicaciones instaladas de Windows y proporciona
+su propio desinstalador. Los datos del usuario en LocalAppData se conservan al
+desinstalar, salvo que el usuario decida borrarlos manualmente.
 
-## Requisitos de una plataforma en línea real
+## Alcance funcional
 
-Una plataforma del tamaño de Steam o Roblox necesita infraestructura de backend, cuentas, seguridad, pagos (si se venden títulos), CDN, distribución de archivos, actualizaciones, moderación, protección de datos, soporte y operación continua. Ninguno de esos servicios se finge en esta edición local.
+Esta edición es una plataforma local: no promete tienda, cuentas de nube,
+pagos, chat, multijugador, hosting ni servicios de descarga de terceros.

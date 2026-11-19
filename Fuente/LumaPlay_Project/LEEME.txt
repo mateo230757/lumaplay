@@ -1,38 +1,60 @@
-LUMAPLAY 1.0.0 — PAQUETE PARA WINDOWS
+LUMAPLAY 1.1.0 — WINDOWS x64
+=============================
 
-INSTALACIÓN RECOMENDADA
-1. En la carpeta principal del ZIP, ejecuta LumaPlay_Setup.exe.
-2. Confirma el inicio del asistente.
-3. En la ventana de PowerShell, elige la carpeta y los accesos directos.
-4. El asistente compila LumaPlay.exe y la instala.
+PARA LOS USUARIOS
+-----------------
+Descarga LumaPlay_Setup.exe desde:
+https://github.com/mateo230757/lumaplay/releases/latest
 
-REQUISITOS
-- Windows 10 u 11 de 64 bits.
-- .NET Framework 4.8.
-- Compilador C# de .NET Framework (csc.exe). En Windows puede estar disponible
-  en %WINDIR%\Microsoft.NET\Framework64\v4.0.30319 o en Framework\v4.0.30319.
+Haz doble clic en el instalador. Verás un asistente gráfico con páginas
+Siguiente / Atrás / Cancelar, licencia, carpeta de destino, opciones de
+accesos directos, progreso y finalización.
 
-QUÉ CONTIENE ESTE PAQUETE
-- LumaPlay_Setup.exe: instalador ejecutable que lleva el proyecto integrado.
-- Fuente/LumaPlay_Project: código C#, icono, scripts y documentación del proyecto.
+No necesitas instalar C#, .NET Framework, .NET Runtime, Visual Studio,
+Build Tools ni un compilador. El instalador lleva la aplicación ya compilada
+y el runtime de .NET que necesita.
 
-IMPORTANTE SOBRE EL EJECUTABLE
-El archivo LumaPlay_Setup.exe sí es un ejecutable nativo de Windows. Durante la
-instalación, el asistente compila la aplicación LumaPlay.exe en el PC usando el
-compilador C# del sistema. Por eso, este paquete aún no contiene una compilación
-previa de LumaPlay.exe. Si falta csc.exe, el asistente mostrará el error y no
-instalará una aplicación incompleta.
+La instalación no descarga componentes de Internet. Después de descargar
+LumaPlay_Setup.exe, puedes instalarla sin conexión.
 
-FUNCIONES DE ESTA EDICIÓN
-- Biblioteca local para organizar juegos ejecutables que ya tengas.
-- Arcade integrado Neon Drift, jugable sin conexión.
-- Catálogo local, logros, estadísticas y ajustes.
-- Perfiles y datos guardados en %LOCALAPPDATA%\LumaPlay.
+REQUISITOS DEL USUARIO
+---------------------
+- Windows 10 22H2 o Windows 11.
+- Procesador y sistema de 64 bits (x64).
+- Espacio libre para la aplicación y el runtime incluido.
+
+QUÉ INSTALA
+-----------
+- LumaPlay.exe, aplicación de escritorio.
+- Acceso directo al menú Inicio.
+- Acceso directo al Escritorio, opcional.
+- Desinstalador de Windows.
+
+Los ajustes y estadísticas se guardan en:
+%LOCALAPPDATA%\LumaPlay
+
+Al desinstalar, el instalador conserva esos datos personales para evitar
+borrar perfiles o estadísticas sin permiso. Puedes eliminarlos manualmente
+desde la carpeta indicada.
+
+CONTENIDO
+---------
+- Biblioteca local para agregar y abrir juegos ya instalados.
+- Inicio, Descubrir, Biblioteca, Logros, Ajustes y Acerca de.
+- Neon Drift, arcade incluido.
+- Perfil, color de acento, puntuación y datos locales.
 
 LIMITACIONES
-No incluye cuentas en la nube, tienda, pagos, multijugador, chat, servidores ni
-descargas automáticas de juegos de terceros. Añadir un juego guarda su ruta; no
-lo copia ni lo instala.
+------------
+LumaPlay es una biblioteca local. No incluye tienda, cuentas en la nube,
+pagos, chat, multijugador ni descargas automáticas de juegos de terceros.
+Añadir un juego registra la ubicación de su ejecutable; no copia ni instala
+el juego.
 
-DESINSTALACIÓN
-Desde la carpeta de instalación ejecuta Desinstalar-LumaPlay.ps1.
+COMPILAR COMO DESARROLLADOR
+---------------------------
+La compilación se realiza con .NET 10 SDK (solo para desarrolladores):
+  .\Build.ps1
+o ejecuta Compilar.bat.
+
+Los usuarios de la aplicación no necesitan ninguna de esas herramientas.

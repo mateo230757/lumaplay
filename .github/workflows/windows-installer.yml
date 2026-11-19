@@ -1,0 +1,75 @@
+name: Build LumaPlay Windows Installer
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lumaplay-windows-release
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    name: Compile and package Windows x64
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install .NET 10 SDK (build machine only)
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish self-contained application
+        shell: pwsh
+        run: |
+          dotnet publish "Fuente/LumaPlay_Project/src/LumaPlay.csproj" --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=embedded --output "Fuente/LumaPlay_Project/publish"
+          if ($LASTEXITCODE -ne 0) { throw "No se pudo compilar LumaPlay." }
+          if (-not (Test-Path "Fuente/LumaPlay_Project/publish/LumaPlay.exe")) { throw "No se generó LumaPlay.exe." }
+
+      - name: Install Inno Setup 6
+        shell: pwsh
+        run: |
+          choco install innosetup --yes --no-progress
+          if ($LASTEXITCODE -ne 0) { throw "No se pudo instalar Inno Setup en el runner." }
+
+      - name: Build graphical installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "artifacts" | Out-Null
+          $compiler = "C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
+          if (-not (Test-Path $compiler)) { throw "No se encontró ISCC.exe de Inno Setup." }
+          & $compiler "/Qp" "Fuente/LumaPlay_Project/installer/LumaPlay.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Falló la compilación del instalador Inno Setup." }
+          $installer = "artifacts/LumaPlay_Setup.exe"
+          if (-not (Test-Path $installer)) { throw "No se produjo artifacts/LumaPlay_Setup.exe." }
+          $hash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  LumaPlay_Setup.exe" | Set-Content -Path "artifacts/SHA256SUMS.txt" -Encoding ascii
+
+      - name: Publish latest installer release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: latest
+          target_commitish: ${{ github.sha }}
+          name: LumaPlay — última versión para Windows
+          body: |
+            Instalador oficial de LumaPlay para Windows x64.
+
+            - Asistente gráfico con Siguiente / Atrás.
+            - Aplicación y runtime .NET incluidos.
+            - No requiere instalar .NET, C#, SDK ni compilador en el PC del usuario.
+            - La instalación funciona sin conexión después de descargar el archivo.
+
+            Build de GitHub Actions: ${{ github.sha }}
+          files: |
+            artifacts/LumaPlay_Setup.exe
+            artifacts/SHA256SUMS.txt
+          fail_on_unmatched_files: true
+          overwrite_files: true
+          make_latest: true

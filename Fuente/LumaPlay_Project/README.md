@@ -1,24 +1,29 @@
-# LumaPlay 1.0.0 — Windows
+# Compilar y mantener LumaPlay
 
-LumaPlay es una plataforma local de biblioteca de juegos con un arcade integrado.
+LumaPlay usa C# como lenguaje de programación y Windows Forms para la interfaz.
+Esto no significa que los usuarios deban instalar C# o un compilador.
 
-## Instalar
-Usa `LumaPlay_Setup.exe` en la raíz del paquete ZIP. El instalador extrae el
-proyecto en una carpeta temporal y abre el asistente de PowerShell incluido.
+## Herramientas del desarrollador
 
-El asistente compila `LumaPlay.exe` en Windows y después crea los accesos que
-elijas. Requiere Windows 10/11, .NET Framework 4.8 y `csc.exe` (compilador C# de
-.NET Framework).
+- .NET 10 SDK.
+- Windows 10/11 x64.
+- Inno Setup 6 si vas a generar el instalador localmente.
 
-## Funciones
-- Biblioteca de juegos locales y enlaces a ejecutables existentes.
-- Neon Drift integrado y sin conexión.
-- Catálogo, logros, estadísticas y ajustes locales.
+## Publicar la aplicación
 
-## Compilación manual
-Desde esta carpeta puedes ejecutar `Compilar.bat` o `Build.ps1`.
+Ejecuta Build.ps1. La salida es la carpeta publish, con LumaPlay.exe
+self-contained y single-file. No actives trimming de forma indiscriminada
+en Windows Forms.
 
-## Limitaciones
-Esta edición no incluye cuentas en la nube, tienda, pagos, multijugador, chat,
-servidores ni descarga automática de juegos. Añadir un juego solo registra la
-ruta de su ejecutable.
+## Generar el Setup
+
+1. Ejecuta Build.ps1.
+2. Abre installer/LumaPlay.iss con Inno Setup 6 o compílalo con ISCC.exe.
+3. La salida se genera en artifacts/LumaPlay_Setup.exe.
+
+GitHub Actions realiza esos pasos y publica el instalador en la release latest.
+
+## Uso por parte de los usuarios
+
+El usuario final solo descarga y ejecuta LumaPlay_Setup.exe. No instala SDK,
+compilador, .NET Framework ni runtime separado.
