@@ -1,5 +1,13 @@
 # Registro de cambios
 
+## 1.1.2 — Compatibilidad y prueba automática
+
+- Añadido manifiesto Win32 que declara compatibilidad con Windows 10 y 11.
+- Añadido modo interno `--self-test` para probar la creación de la ventana principal.
+- GitHub Actions ejecuta la prueba de inicio antes de empaquetar el Setup.
+- El ejecutable registra los datos del sistema y el resultado de la prueba.
+
+
 ## 1.1.1 — Registro de errores de inicio
 
 - Registro detallado del arranque en %LOCALAPPDATA%\\LumaPlay\\startup.log.

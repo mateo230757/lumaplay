@@ -19,15 +19,8 @@ namespace LumaPlay
         }
 
         [STAThread]
-        private static void Main()
+        private static int Main(string[] args)
         {
-            WriteLog("--------------------------------------------------");
-            WriteLog("LumaPlay starting. Version 1.1.1");
-            WriteLog("OS: " + Environment.OSVersion.VersionString);
-            WriteLog("64-bit OS: " + Environment.Is64BitOperatingSystem);
-            WriteLog("64-bit process: " + Environment.Is64BitProcess);
-            WriteLog("CLR: " + Environment.Version);
-
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -36,6 +29,31 @@ namespace LumaPlay
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+
+                WriteLog("--------------------------------------------------");
+                WriteLog("LumaPlay starting. Version 1.1.2");
+                WriteLog("OS: " + Environment.OSVersion.VersionString);
+                WriteLog("64-bit OS: " + Environment.Is64BitOperatingSystem);
+                WriteLog("64-bit process: " + Environment.Is64BitProcess);
+                WriteLog("CLR: " + Environment.Version);
+
+                if (args != null && Array.Exists(args, a => String.Equals(a, "--self-test", StringComparison.OrdinalIgnoreCase)))
+                {
+                    WriteLog("Running headless startup self-test.");
+                    AppSettings testSettings = new AppSettings();
+                    testSettings.SetupComplete = true;
+                    testSettings.Normalize();
+                    Theme.Apply(testSettings.Accent);
+
+                    using (MainForm testForm = new MainForm(testSettings))
+                    {
+                        if (testForm == null) throw new InvalidOperationException("MainForm could not be created.");
+                        WriteLog("Main window constructed successfully.");
+                    }
+
+                    WriteLog("SELF-TEST PASSED.");
+                    return 0;
+                }
 
                 WriteLog("Loading local settings.");
                 AppSettings settings = AppSettings.Load();
@@ -50,7 +68,7 @@ namespace LumaPlay
                         if (setup.ShowDialog() != DialogResult.OK)
                         {
                             WriteLog("First-run setup was cancelled.");
-                            return;
+                            return 0;
                         }
                     }
                     WriteLog("First-run profile setup completed.");
@@ -63,11 +81,13 @@ namespace LumaPlay
                     Application.Run(main);
                 }
                 WriteLog("LumaPlay closed normally.");
+                return 0;
             }
             catch (Exception ex)
             {
                 WriteException("Fatal startup error", ex);
                 ShowError("LumaPlay no pudo iniciarse.", ex);
+                return 1;
             }
         }
 
@@ -99,7 +119,7 @@ namespace LumaPlay
             }
             catch
             {
-                // Logging must remain available even if Windows cannot display the dialog.
+                WriteLog("Could not display error dialog.");
             }
         }
 

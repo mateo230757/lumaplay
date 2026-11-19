@@ -11,12 +11,13 @@ $compilerCandidates = @(
 $csc = $compilerCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 if (-not $csc) {
-    throw "No se encontró csc.exe. Esta herramienta solo se necesita para compilar el código fuente como desarrollador; el usuario final no la necesita."
+    throw "No se encontró csc.exe en el entorno de compilación. El usuario final no necesita el compilador."
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 $exe = Join-Path $OutputDirectory "LumaPlay.exe"
 $icon = Join-Path $source "Assets\lumaplay.ico"
+$manifest = Join-Path $PSScriptRoot "app.manifest"
 $files = @(
     (Join-Path $source "Program.cs"),
     (Join-Path $source "AppSettings.cs"),
@@ -26,6 +27,10 @@ $files = @(
     (Join-Path $source "GameCanvas.cs")
 )
 
+if (-not (Test-Path $manifest)) {
+    throw "No se encontró app.manifest. Es necesario para declarar la compatibilidad de Windows."
+}
+
 $compilerArgs = @(
     "/nologo",
     "/target:winexe",
@@ -33,6 +38,7 @@ $compilerArgs = @(
     "/optimize+",
     "/debug-",
     "/out:$exe",
+    "/win32manifest:$manifest",
     "/reference:System.dll",
     "/reference:System.Core.dll",
     "/reference:System.Drawing.dll",
@@ -42,7 +48,7 @@ $compilerArgs = @(
 if (Test-Path $icon) { $compilerArgs += "/win32icon:$icon" }
 $compilerArgs += $files
 
-Write-Host "Compilando LumaPlay para Windows..." -ForegroundColor Cyan
+Write-Host "Compilando LumaPlay 1.1.2 con manifiesto explícito de compatibilidad Windows..." -ForegroundColor Cyan
 & $csc @compilerArgs
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $exe)) {
     throw "Falló la compilación de LumaPlay."

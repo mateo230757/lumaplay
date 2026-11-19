@@ -1,8 +1,8 @@
-; LumaPlay 1.1.1 — Inno Setup 6
+; LumaPlay 1.1.2 — Inno Setup 6
 ; El usuario recibe una app ya compilada; no compila código C# durante la instalación.
 
 #define AppName "LumaPlay"
-#define AppVersion "1.1.1"
+#define AppVersion "1.1.2"
 #define AppPublisher "LumaPlay"
 
 [Setup]

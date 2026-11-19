@@ -26,7 +26,14 @@ jobs:
         run: |
           & "Fuente/LumaPlay_Project/Build.ps1" -OutputDirectory "Fuente/LumaPlay_Project/publish"
           if ($LASTEXITCODE -ne 0) { throw "No se pudo compilar LumaPlay." }
-          if (-not (Test-Path "Fuente/LumaPlay_Project/publish/LumaPlay.exe")) { throw "No se generó LumaPlay.exe." }
+          $app = "Fuente/LumaPlay_Project/publish/LumaPlay.exe"
+          if (-not (Test-Path $app)) { throw "No se generó LumaPlay.exe." }
+          Write-Host "Ejecutando prueba automática de inicio..."
+          & $app --self-test
+          if ($LASTEXITCODE -ne 0) {
+            Get-Content "$env:LOCALAPPDATA/LumaPlay/startup.log" -ErrorAction SilentlyContinue
+            throw "LumaPlay no superó la prueba de inicio."
+          }
 
       - name: Install Inno Setup 6
         shell: pwsh
@@ -54,7 +61,10 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: LumaPlay — última versión para Windows
           body: |
-            Instalador oficial de LumaPlay para Windows x64.
+            Instalador oficial de LumaPlay 1.1.2 para Windows x64.
+
+- Manifiesto de compatibilidad Windows 10/11 incluido.
+- La compilación se prueba con --self-test antes de publicar.
 
             - Asistente gráfico con Siguiente / Atrás.
             - Aplicación precompilada.
