@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080b18"><title>Neon Drift — LumaPlay Arcade</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080b18;color:#f5f3ff;font:15px/1.5 "Segoe UI",system-ui,sans-serif;min-height:100vh;display:grid;place-items:center;padding:18px}.game{width:min(760px,100%)}header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}a{color:#9bdff0;text-decoration:none}.tag{color:#b7a8ff;font-size:11px;letter-spacing:.16em;font-weight:800}.title{font-size:clamp(28px,6vw,42px);font-weight:900;letter-spacing:-.04em;margin:0}.panel{border:1px solid #9b88ff44;background:#12172b;border-radius:18px;padding:12px;box-shadow:0 25px 70px #0008}.hud{display:flex;justify-content:space-between;padding:3px 5px 11px;color:#aeb5d0;font-size:12px}.hud b{color:white;font-size:17px}canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;background:#090f20;border-radius:12px;border:1px solid #ffffff18;touch-action:none}.controls{display:flex;justify-content:center;gap:12px;margin-top:12px}.btn{border:1px solid #ffffff24;background:#222044;color:white;border-radius:11px;padding:11px 18px;font-weight:800;cursor:pointer}.btn.primary{background:linear-gradient(110deg,#8069e8,#368da8)}.help{text-align:center;color:#8992b1;font-size:12px;margin:12px 0 0}.mobile{display:none}@media(max-width:600px){.mobile{display:flex}.controls .btn{flex:1}.help{font-size:11px}}
+</style>
+</head>
+<body><main class="game">
+<header><div><div class="tag">LUMAPLAY ARCADE</div><h1 class="title">NEON DRIFT</h1></div><a href="index.html">← Volver a LumaPlay</a></header>
+<div class="panel"><div class="hud"><span>PUNTOS<br><b id="score">000000</b></span><span>RÉCORD<br><b id="best">000000</b></span><span>VELOCIDAD<br><b id="speed">1.0×</b></span></div><canvas id="game" width="800" height="500" aria-label="Juego Neon Drift"></canvas>
+<div class="controls"><button class="btn" id="left" aria-label="Mover a la izquierda">← Izquierda</button><button class="btn primary" id="start">Jugar</button><button class="btn" id="right" aria-label="Mover a la derecha">Derecha →</button></div>
+<p class="help">Controles: ← / → o A / D para cambiar de carril · Espacio para iniciar o reintentar</p></div>
+</main>
+<script>
+(()=>{
+const c=document.getElementById('game'),ctx=c.getContext('2d'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),speedEl=document.getElementById('speed'),startBtn=document.getElementById('start');
+const W=800,H=500,lanes=[270,400,530],player={lane:1,y:405},obstacles=[],stars=[];
+let state='ready',score=0,best=Number(localStorage.getItem('lumaplay-neon-best')||0),last=0,spawn=0,speed=1,raf=0;
+bestEl.textContent=String(best).padStart(6,'0');
+for(let i=0;i<65;i++)stars.push({x:Math.random()*W,y:Math.random()*H,s:Math.random()*2+0.5});
+function rounded(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0b1230');g.addColorStop(1,'#10182b');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='#a8b7ff';for(const s of stars){ctx.globalAlpha=.4+Math.sin((s.y+score)*.03)*.3;ctx.fillRect(s.x,s.y,2*s.s,2*s.s);}ctx.globalAlpha=1;
+ ctx.fillStyle='#111a30';ctx.beginPath();ctx.moveTo(285,0);ctx.lineTo(515,0);ctx.lineTo(690,H);ctx.lineTo(110,H);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#6675b8';ctx.globalAlpha=.55;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(285,0);ctx.lineTo(110,H);ctx.moveTo(515,0);ctx.lineTo(690,H);ctx.stroke();ctx.globalAlpha=1;
+ for(let x of [350,450]){ctx.strokeStyle='#6675a6';ctx.lineWidth=2;ctx.setLineDash([22,20]);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(400+(x-400)*1.7,H);ctx.stroke();}ctx.setLineDash([]);
+ for(const o of obstacles){rounded(o.x-25,o.y-23,50,46,9,'#ff547d');rounded(o.x-17,o.y-17,34,7,4,'#ffc2d0');ctx.fillStyle='#7b2346';ctx.fillRect(o.x-15,o.y+12,30,5);}
+ // player ship
+ const px=lanes[player.lane],py=player.y;ctx.shadowColor='#5ce5ff';ctx.shadowBlur=22;ctx.fillStyle='#62dff2';ctx.beginPath();ctx.moveTo(px,py-28);ctx.lineTo(px+24,py+21);ctx.lineTo(px,py+12);ctx.lineTo(px-24,py+21);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#e9fcff';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+ if(state!=='running'){ctx.fillStyle='#050817b8';ctx.fillRect(0,0,W,H);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 38px Segoe UI';ctx.fillText(state==='ready'?'NEON DRIFT':state==='over'?'FIN DE LA PARTIDA':'PAUSA',W/2,210);ctx.font='16px Segoe UI';ctx.fillStyle='#b9c1df';ctx.fillText(state==='ready'?'Pulsa JUGAR para comenzar':state==='over'?'Tu puntuación: '+Math.floor(score):'Pulsa JUGAR para continuar',W/2,250);}
+}
+function move(d){if(state==='over'||state==='ready')return;player.lane=Math.max(0,Math.min(2,player.lane+d));}
+function reset(){score=0;speed=1;spawn=0;obstacles.length=0;player.lane=1;state='running';startBtn.textContent='Pausar';last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);}
+function end(){state='over';startBtn.textContent='Reintentar';if(Math.floor(score)>best){best=Math.floor(score);localStorage.setItem('lumaplay-neon-best',best);bestEl.textContent=String(best).padStart(6,'0');}draw();}
+function loop(t){if(state!=='running'){draw();return;}const dt=Math.min(32,t-last);last=t;score+=dt*.018*speed;speed=Math.min(2.6,1+score/900);spawn-=dt;
+ if(spawn<=0){const lane=Math.floor(Math.random()*3);obstacles.push({lane,x:lanes[lane],y:-25});spawn=Math.max(390,920-score*.18);}
+ for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i];o.y+=dt*.22*speed;if(o.y>H+40){obstacles.splice(i,1);continue;}if(o.lane===player.lane&&Math.abs(o.y-player.y)<37){end();return;}}
+ scoreEl.textContent=String(Math.floor(score)).padStart(6,'0');speedEl.textContent=speed.toFixed(1)+'×';draw();raf=requestAnimationFrame(loop);}
+function toggle(){if(state==='running'){state='paused';startBtn.textContent='Continuar';draw();}else if(state==='paused'){state='running';startBtn.textContent='Pausar';last=performance.now();raf=requestAnimationFrame(loop);}else reset();}
+startBtn.addEventListener('click',toggle);document.getElementById('left').addEventListener('click',()=>move(-1));document.getElementById('right').addEventListener('click',()=>move(1));
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight',' ','a','A','d','D'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')move(-1);if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')move(1);if(e.key===' ')toggle();});
+draw();
+})();
+</script></body></html>
