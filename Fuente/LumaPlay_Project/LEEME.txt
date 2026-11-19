@@ -1,4 +1,4 @@
-LUMAPLAY 1.1.0 — WINDOWS x64
+LUMAPLAY 1.1.1 — WINDOWS x64
 =============================
 
 PARA LOS USUARIOS
@@ -57,3 +57,11 @@ La compilación se realiza con el compilador de C# del entorno de desarrollo:
 o ejecuta Compilar.bat.
 
 Los usuarios de la aplicación no necesitan el compilador.
+
+DIAGNÓSTICO SI LA APLICACIÓN NO ABRE
+------------------------------------
+LumaPlay 1.1.1 registra el inicio y cualquier error en:
+%LOCALAPPDATA%\LumaPlay\startup.log
+
+Si aparece un mensaje de error, abre esa ruta, adjunta startup.log y envíalo
+para que se pueda identificar y corregir la causa concreta.

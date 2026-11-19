@@ -1,5 +1,11 @@
 # Registro de cambios
 
+## 1.1.1 — Registro de errores de inicio
+
+- Registro detallado del arranque en %LOCALAPPDATA%\\LumaPlay\\startup.log.
+- Captura de excepciones de inicio y errores de Windows Forms.
+- Mensaje visible con el tipo de error y la ubicación del registro.
+
 ## 1.1.0 — Instalador gráfico y aplicación precompilada
 
 - El ejecutable LumaPlay.exe se compila en GitHub Actions antes de la distribución.

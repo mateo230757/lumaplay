@@ -101,7 +101,7 @@ namespace LumaPlay
             brand.Controls.Add(name);
             Label sub = new Label
             {
-                Text = "GAMING SPACE  ·  v1.0",
+                Text = "GAMING SPACE  ·  v1.1.1",
                 Font = new Font("Segoe UI", 7.5F, FontStyle.Bold),
                 ForeColor = Theme.Muted,
                 Location = new Point(64, 57),
@@ -627,7 +627,7 @@ namespace LumaPlay
             hero.Controls.Add(brand);
             Label slogan = new Label { Text = "Un lugar para reunir, descubrir y jugar.", Location = new Point(29, 83), AutoSize = true, ForeColor = Color.FromArgb(223, 225, 249), Font = new Font("Segoe UI", 11F) };
             hero.Controls.Add(slogan);
-            Label version = new Label { Text = "VERSIÓN 1.1.0  ·  WINDOWS DESKTOP  ·  AUTÓNOMA", Location = new Point(29, 125), AutoSize = true, ForeColor = Color.FromArgb(201, 192, 255), Font = new Font("Segoe UI Semibold", 8F, FontStyle.Bold) };
+            Label version = new Label { Text = "VERSIÓN 1.1.1  ·  WINDOWS DESKTOP  ·  AUTÓNOMA", Location = new Point(29, 125), AutoSize = true, ForeColor = Color.FromArgb(201, 192, 255), Font = new Font("Segoe UI Semibold", 8F, FontStyle.Bold) };
             hero.Controls.Add(version);
             stack.Controls.Add(hero);
             stack.Controls.Add(Heading("Qué incluye", 15));
