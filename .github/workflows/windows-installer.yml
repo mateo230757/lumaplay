@@ -21,19 +21,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Compile LumaPlay in the build runner
+      - name: Compile LumaPlay and run startup test
         shell: pwsh
         run: |
           & "Fuente/LumaPlay_Project/Build.ps1" -OutputDirectory "Fuente/LumaPlay_Project/publish"
           if ($LASTEXITCODE -ne 0) { throw "No se pudo compilar LumaPlay." }
+
           $app = "Fuente/LumaPlay_Project/publish/LumaPlay.exe"
           if (-not (Test-Path $app)) { throw "No se generó LumaPlay.exe." }
+
           Write-Host "Ejecutando prueba automática de inicio..."
           & $app --self-test
           if ($LASTEXITCODE -ne 0) {
             Get-Content "$env:LOCALAPPDATA/LumaPlay/startup.log" -ErrorAction SilentlyContinue
             throw "LumaPlay no superó la prueba de inicio."
           }
+          Write-Host "LumaPlay superó la prueba de inicio." -ForegroundColor Green
 
       - name: Install Inno Setup 6
         shell: pwsh
@@ -49,6 +52,7 @@ jobs:
           if (-not (Test-Path $compiler)) { throw "No se encontró ISCC.exe de Inno Setup." }
           & $compiler "/Qp" "Fuente/LumaPlay_Project/installer/LumaPlay.iss"
           if ($LASTEXITCODE -ne 0) { throw "Falló la compilación del instalador Inno Setup." }
+
           $installer = "artifacts/LumaPlay_Setup.exe"
           if (-not (Test-Path $installer)) { throw "No se produjo artifacts/LumaPlay_Setup.exe." }
           $hash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -63,9 +67,8 @@ jobs:
           body: |
             Instalador oficial de LumaPlay 1.1.2 para Windows x64.
 
-- Manifiesto de compatibilidad Windows 10/11 incluido.
-- La compilación se prueba con --self-test antes de publicar.
-
+            - Manifiesto de compatibilidad Windows 10/11 incluido.
+            - La compilación se prueba con --self-test antes de publicar.
             - Asistente gráfico con Siguiente / Atrás.
             - Aplicación precompilada.
             - No requiere instalar C#, Visual Studio, Build Tools ni compilador en el PC del usuario.
